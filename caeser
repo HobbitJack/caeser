@@ -63,7 +63,12 @@ for option in options:
         sys.exit(0)
     elif option == "-v" or option == "--version":
         print("caeser v2.0.0")
-        print("Copyright C Jack Renton Uteg 2025")
+        print("Copyright (C) 2025 Jack Renton Uteg.")
+        print("License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>.")
+        print("This is free software: you are free to change and redistribute it.")
+        print("There is NO WARRANTY, to the extent permitted by law.")
+        print()
+        print("Written by Jack R. Uteg.")	
         sys.exit(0)
     elif option == "-A":
         DIGITS = True
