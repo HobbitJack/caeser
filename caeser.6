@@ -1,0 +1,55 @@
+.TH CAESER "6" "June 2025" "caeser v2.0.0" "Games Manual"
+.SH NAME
+caeser \- encipher a file
+.SH SYNOPSIS
+.B caeser
+[\fI\,OPTION\/\fR]... [\fI\,FILE\/\fR]
+.SH DESCRIPTION
+Encipher FILE using a Caeser shift cipher.
+Do not use this program for anything that actually needs to be secure.
+.PP
+With no FILE, or when FILE is -, read standard input.
+.PP
+Mandatory arguments to long options are mandatory for short options too.
+.SS "General options"
+.TP
+\fB\-d\fR, \fB\-\-decipher\fR
+Apply SHIFT in reverse, to decipher the message without needing to manually negate the shift.
+.TP
+\fB\-s\fR, \fB\-\-shift\fR=\fI\,SHIFT\/\fR
+Apply a shift of
+.I SHIFT
+(default \fI13\fR).
+This means the default behavior is a ROT13.
+.SS "Characterset options:"
+.TP
+\fB\-A\fR, \fB\-\-all\fR
+Apply shifts to all character sets.
+This is the same as setting '-D -P -W'.
+.TP
+\fB\-c\fR, \fB\-\-charset\fR
+Treat all characters as a single characterset; this may make frequency analysis marginally more inconvient.
+.TP
+\fB\-D\fR, \fB\-\-digits\fR
+Also apply the shift to ASCII digit characters (0-9).
+This shift is modulo 10.
+.TP
+\fB\-P\fR, \fB\-\-punctuation\fR
+Also apply the shift to ASCII punctuation characters (!-~).
+This shift is modulo 32.
+.TP
+\fB\-W\fR, \fB\-\-whitespace\fR
+Also apply the shift to ASCII whitespace characters (SPACE, HT-CR).
+This shift is modulo 6.
+.SS "Getting help:"
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Print this help and exit
+.TP
+\fB\-v\fR, \fB\-\-version\fR
+Print version information and exit
+.PP
+.SH COPYRIGHT
+Copyright C Jack Renton Uteg 2025
+.SH SEE ALSO
+\fBdecaeser(6)\fR

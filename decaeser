@@ -1,0 +1,230 @@
+#!/usr/bin/bash
+
+TMPINPUT="$(mktemp)"
+TMPOUTPUT="$(mktemp)"
+FINAL_SHIFT=-1
+
+cat ${1:-/dev/stdin} > "$TMPINPUT"
+
+# Normal attack
+for SHIFT in $(seq 25)
+do
+	caeser -ds $SHIFT "$TMPINPUT" > "$TMPOUTPUT"
+
+	TOTAL_WORDS=$(wc -w "$TMPOUTPUT" | tr -s ' ' '\t' | cut -f1)
+	REAL_WORDS=0
+
+	while read word
+	do
+		[ -n "$(grep -Fx -- "$word" /usr/share/dict/words)" ] && REAL_WORDS=$(($REAL_WORDS+1))
+	done < <(cat "$TMPOUTPUT" | tr ' ' '\n')
+	
+	[ "$REAL_WORDS" -gt "$(($TOTAL_WORDS-$REAL_WORDS))" ] && FINAL_SHIFT=$SHIFT && break
+done
+
+if [ "$FINAL_SHIFT" -gt 0 ]
+then
+	cat "$TMPOUTPUT"
+	echo "decaeser: normal: final shift is $SHIFT" > /dev/stderr
+	rm "$TMPINPUT" "$TMPOUTPUT"
+	exit 0
+fi
+
+# Charset attack
+# No -D/-P/-W
+for SHIFT in $(seq 51)
+do
+	caeser -c -ds $SHIFT "$TMPINPUT" > "$TMPOUTPUT"
+
+	TOTAL_WORDS=$(wc -w "$TMPOUTPUT" | tr -s ' ' '\t' | cut -f1)
+	REAL_WORDS=0
+
+	while read word
+	do
+		[ -n "$(grep -Fx -- "$word" /usr/share/dict/words)" ] && REAL_WORDS=$(($REAL_WORDS+1))
+	done < <(cat "$TMPOUTPUT" | tr ' ' '\n')
+	
+	[ "$REAL_WORDS" -gt "$(($TOTAL_WORDS-$REAL_WORDS))" ] && FINAL_SHIFT=$SHIFT && break
+done
+
+if [ "$FINAL_SHIFT" -gt 0 ]
+then
+	cat "$TMPOUTPUT"
+	echo "decaeser: charset: -c: final shift is $SHIFT" > /dev/stderr
+	rm "$TMPINPUT" "$TMPOUTPUT"
+	exit 0
+fi
+
+# -DPW
+for SHIFT in $(seq 99)
+do
+	caeser -c -DPW -ds $SHIFT "$TMPINPUT" > "$TMPOUTPUT"
+
+	TOTAL_WORDS=$(wc -w "$TMPOUTPUT" | tr -s ' ' '\t' | cut -f1)
+	REAL_WORDS=0
+
+	while read word
+	do
+		[ -n "$(grep -Fx -- "$word" /usr/share/dict/words)" ] && REAL_WORDS=$(($REAL_WORDS+1))
+	done < <(cat "$TMPOUTPUT" | tr ' ' '\n')
+	
+	[ "$REAL_WORDS" -gt "$(($TOTAL_WORDS-$REAL_WORDS))" ] && FINAL_SHIFT=$SHIFT && break
+done
+
+if [ "$FINAL_SHIFT" -gt 0 ]
+then
+	cat "$TMPOUTPUT"
+	echo "decaeser: charset: -c -DPW: final shift is $SHIFT" > /dev/stderr
+	rm "$TMPINPUT" "$TMPOUTPUT"
+	exit 0
+fi
+
+exit 1
+
+# -DP, no -W
+for SHIFT in $(seq 93)
+do
+	caeser -c -DP -ds $SHIFT "$TMPINPUT" > "$TMPOUTPUT"
+
+	TOTAL_WORDS=$(wc -w "$TMPOUTPUT" | tr -s ' ' '\t' | cut -f1)
+	REAL_WORDS=0
+
+	while read word
+	do
+		[ -n "$(grep -Fx -- "$word" /usr/share/dict/words)" ] && REAL_WORDS=$(($REAL_WORDS+1))
+	done < <(cat "$TMPOUTPUT" | tr ' ' '\n')
+	
+	[ "$REAL_WORDS" -gt "$(($TOTAL_WORDS-$REAL_WORDS))" ] && FINAL_SHIFT=$SHIFT && break
+done
+
+if [ "$FINAL_SHIFT" -gt 0 ]
+then
+	cat "$TMPOUTPUT"
+	echo "decaeser: charset: -c -DP: final shift is $SHIFT" > /dev/stderr
+	rm "$TMPINPUT" "$TMPOUTPUT"
+	exit 0
+fi
+
+# -PW, no -D
+for SHIFT in $(seq 89)
+do
+	caeser -c -PW -ds $SHIFT "$TMPINPUT" > "$TMPOUTPUT"
+
+	TOTAL_WORDS=$(wc -w "$TMPOUTPUT" | tr -s ' ' '\t' | cut -f1)
+	REAL_WORDS=0
+
+	while read word
+	do
+		[ -n "$(grep -Fx -- "$word" /usr/share/dict/words)" ] && REAL_WORDS=$(($REAL_WORDS+1))
+	done < <(cat "$TMPOUTPUT" | tr ' ' '\n')
+	
+	[ "$REAL_WORDS" -gt "$(($TOTAL_WORDS-$REAL_WORDS))" ] && FINAL_SHIFT=$SHIFT && break
+done
+
+if [ "$FINAL_SHIFT" -gt 0 ]
+then
+	cat "$TMPOUTPUT"
+	echo "decaeser: charset: -c -PW: final shift is $SHIFT" > /dev/stderr
+	rm "$TMPINPUT" "$TMPOUTPUT"
+	exit 0
+fi
+
+# -DW, no -P
+for SHIFT in $(seq 67)
+do
+	caeser -c -DW -ds $SHIFT "$TMPINPUT" > "$TMPOUTPUT"
+
+	TOTAL_WORDS=$(wc -w "$TMPOUTPUT" | tr -s ' ' '\t' | cut -f1)
+	REAL_WORDS=0
+
+	while read word
+	do
+		[ -n "$(grep -Fx -- "$word" /usr/share/dict/words)" ] && REAL_WORDS=$(($REAL_WORDS+1))
+	done < <(cat "$TMPOUTPUT" | tr ' ' '\n')
+	
+	[ "$REAL_WORDS" -gt "$(($TOTAL_WORDS-$REAL_WORDS))" ] && FINAL_SHIFT=$SHIFT && break
+done
+
+if [ "$FINAL_SHIFT" -gt 0 ]
+then
+	cat "$TMPOUTPUT"
+	echo "decaeser: charset: -c -DW: final shift is $SHIFT" > /dev/stderr
+	rm "$TMPINPUT" "$TMPOUTPUT"
+	exit 0
+fi
+
+# -W, no -D/-P
+for SHIFT in $(seq 57)
+do
+	caeser -c -W -ds $SHIFT "$TMPINPUT" > "$TMPOUTPUT"
+
+	TOTAL_WORDS=$(wc -w "$TMPOUTPUT" | tr -s ' ' '\t' | cut -f1)
+	REAL_WORDS=0
+
+	while read word
+	do
+		[ -n "$(grep -Fx -- "$word" /usr/share/dict/words)" ] && REAL_WORDS=$(($REAL_WORDS+1))
+	done < <(cat "$TMPOUTPUT" | tr ' ' '\n')
+	
+	[ "$REAL_WORDS" -gt "$(($TOTAL_WORDS-$REAL_WORDS))" ] && FINAL_SHIFT=$SHIFT && break
+done
+
+if [ "$FINAL_SHIFT" -gt 0 ]
+then
+	cat "$TMPOUTPUT"
+	echo "decaeser: charset: -c -D: final shift is $SHIFT" > /dev/stderr
+	rm "$TMPINPUT" "$TMPOUTPUT"
+	exit 0
+fi
+
+# -D, no -P/-W
+for SHIFT in $(seq 61)
+do
+	caeser -c -D -ds $SHIFT "$TMPINPUT" > "$TMPOUTPUT"
+
+	TOTAL_WORDS=$(wc -w "$TMPOUTPUT" | tr -s ' ' '\t' | cut -f1)
+	REAL_WORDS=0
+
+	while read word
+	do
+		[ -n "$(grep -Fx -- "$word" /usr/share/dict/words)" ] && REAL_WORDS=$(($REAL_WORDS+1))
+	done < <(cat "$TMPOUTPUT" | tr ' ' '\n')
+	
+	[ "$REAL_WORDS" -gt "$(($TOTAL_WORDS-$REAL_WORDS))" ] && FINAL_SHIFT=$SHIFT && break
+done
+
+if [ "$FINAL_SHIFT" -gt 0 ]
+then
+	cat "$TMPOUTPUT"
+	echo "decaeser: charset: -c -D: final shift is $SHIFT" > /dev/stderr
+	rm "$TMPINPUT" "$TMPOUTPUT"
+	exit 0
+fi
+
+# -P, no -D/-W
+for SHIFT in $(seq 83)
+do
+	caeser -c -P -ds $SHIFT "$TMPINPUT" > "$TMPOUTPUT"
+
+	TOTAL_WORDS=$(wc -w "$TMPOUTPUT" | tr -s ' ' '\t' | cut -f1)
+	REAL_WORDS=0
+
+	while read word
+	do
+		[ -n "$(grep -Fx -- "$word" /usr/share/dict/words)" ] && REAL_WORDS=$(($REAL_WORDS+1))
+	done < <(cat "$TMPOUTPUT" | tr ' ' '\n')
+	
+	[ "$REAL_WORDS" -gt "$(($TOTAL_WORDS-$REAL_WORDS))" ] && FINAL_SHIFT=$SHIFT && break
+done
+
+if [ "$FINAL_SHIFT" -gt 0 ]
+then
+	cat "$TMPOUTPUT"
+	echo "decaeser: charset: -c -P: final shift is $SHIFT" > /dev/stderr
+	rm "$TMPINPUT" "$TMPOUTPUT"
+	exit 0
+fi
+
+echo "deceaser: ${1:-stdin}: could not decrypt"
+rm "$TMPINPUT" "$TMPOUTPUT"
+exit 1

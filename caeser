@@ -1,0 +1,146 @@
+#!/usr/bin/python
+# encipher a file
+
+import getopt
+import os
+import stat
+import string
+import sys
+
+# CLI options we parse
+short_options = "AcdDPs:Whv"
+long_options = [
+    "all"
+    "charset"
+    "decipher",
+    "digits",
+    "punctuation",
+    "shift=",
+    "whitespace"
+    "help",
+    "version",
+]
+
+CHARSET = False
+DECIPHER = False
+DIGITS = False
+PUNCTUATION = False
+WHITESPACE = False
+SHIFT = 13
+
+try:
+    options, positional_arguments = getopt.getopt(
+        sys.argv[1:], short_options, long_options
+    )
+except getopt.GetoptError as error:
+    print(f"caeser: '-{error.opt}': Option not recognized", file=sys.stderr)
+    sys.exit(1)
+
+# Parse options
+for option in options:
+    argument = option[1]
+    option = option[0]
+
+    if option == "-h" or option == "--help":
+        print("Usage: caeser [OPTION]... [FILE]")
+        print("Apply a Caeser shift cipher to a file.")
+        print()
+        print("General options:")
+        print("  -d, --decipher                 Decipher by applying a negative shift")
+        print("  -s, --shift=SHIFT              Shift by SHIFT letters (default 13)")
+        print()
+        print("Characterset options")
+        print("  -A, --all                      Shorthand for setting -DPW")
+        print("  -c, --charset                  Use a single merged charset (marginally better security)")
+        print("  -D, --digits                   Also encipher/decipher digits characters")
+        print("  -P, --punctuation              Also encipher/decipher punctuation characters")
+        print("  -W, --whitespace               Alse encipher/decipher whitespace characters")
+        print()
+        print("Getting help:")
+        print("  -h, --help                     Print this help and exit")
+        print("  -v, --version                  Print version information and exit")
+        print("For full documentation, try 'man caeser'.")
+        sys.exit(0)
+    elif option == "-v" or option == "--version":
+        print("caeser v2.0.0")
+        print("Copyright C Jack Renton Uteg 2025")
+        sys.exit(0)
+    elif option == "-A":
+        DIGITS = True
+        PUNCTUATION = True
+        WHITESPACE = True
+    elif option == "-c" or option == "--charset":
+        CHARSET = True
+    elif option == "-d" or option == "--decipher":
+        DECIPHER = True
+    elif option == "-D" or option == "--digits":
+        DIGITS = True
+    elif option == "-P" or option == "--punctuation":
+        PUNCTUATION = True
+    elif option == "-s" or option == "--shift":
+        try:
+            SHIFT = int(argument)
+        except ValueError:
+            print("caeser: {argument}: Bad argument", file=sys.stderr)
+            sys.exit(1)
+    elif option == "-W" or option == "--whitespace":
+        WHITESPACE = True
+
+if not positional_arguments:
+    input_file = "-"
+else:
+    input_file = positional_arguments.pop()
+
+if input_file == "-":
+    file = sys.stdin.read()
+else:
+    if os.path.isfile(input_file):
+        pass
+    elif os.path.isfile(f"{os.getcwd}/{input_file}"):
+        input_file = f"{os.getcwd}/{input_file}"
+    elif os.path.isdir(input_file) or os.path.isdir(f"{os.getcwd}/{input_file}"):
+        print(f"caeser: {input_file}: Is a directory", file=sys.stderr)
+        sys.exit(1)
+    else:
+        print(f"caeser: {input_file}: No such file or directory", file=sys.stderr)
+        sys.exit(1)
+
+    with open(input_file, mode="br") as text_file:
+        file = [chr(data) for data in text_file.read()]
+
+SHIFT *= (-1 if DECIPHER else 1)
+
+if CHARSET:
+    CHARSET = []
+    charsets = [string.ascii_uppercase, string.ascii_lowercase]
+
+    if DIGITS:
+        charsets.append(string.digits)
+    if PUNCTUATION:
+        charsets.append(string.punctuation)
+    if WHITESPACE:
+        charsets.append(string.whitespace)
+    
+    for charset in charsets:
+        for char in charset:
+            CHARSET.append(char)
+
+    print("".join(CHARSET[(CHARSET.index(char) + SHIFT) % len(CHARSET)] if char in CHARSET else char for char in file[:-1]))
+else:
+    new_file = []
+    for char in file[:-1]:
+        if char in string.ascii_lowercase:
+            new_file.append(string.ascii_lowercase[(string.ascii_lowercase.index(char) + SHIFT) % 26])
+        elif char in string.ascii_uppercase:
+            new_file.append(string.ascii_uppercase[(string.ascii_uppercase.index(char) + SHIFT) % 26])
+        elif DIGITS and char in string.digits:
+            new_file.append(string.digits[(string.digits.index(char) + SHIFT) % 10])
+        elif PUNCTUATION and char in string.punctuation:
+            new_file.append(string.punctuation[(string.punctuation.index(char) + SHIFT) % 32])
+        elif WHITESPACE and char in string.whitespace:
+            new_file.append(string.whitespace[(string.whitespace.index(char) + SHIFT) % 6])
+        else:
+            new_file.append(char)
+
+    print("".join(new_file))
+sys.exit(0)
