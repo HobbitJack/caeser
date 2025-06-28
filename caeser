@@ -16,7 +16,7 @@ long_options = [
     "digits",
     "punctuation",
     "shift=",
-    "whitespace"
+    "whitespace",
     "help",
     "version",
 ]
