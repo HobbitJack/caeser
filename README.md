@@ -14,7 +14,7 @@ Installation may be achieved using `make`:
 ```
 make install
 ```
-to install the program to `/usr/local/bin/`, with manual page documentation installed to `/usr/local/share/man/man1/` and examples to `/usr/local/share/caeser/examples`.
+to install the program to `/usr/local/bin/`, with manual page documentation installed to `/usr/local/share/man/man6/` and examples to `/usr/local/share/caeser/examples`.
 To simplify user installations, the program may also be installed using
 ```
 make install-user
