@@ -22,6 +22,6 @@ make install-user
 which will install the program to the current user's `~/.local/`.
 
 ### COPYING
-This project is released under the terms of the GNU General Public License v3, or later at you preference; Copyright Jack R. Uteg 2025.
+This project is released under the terms of the GNU General Public License v3, or any later version of the license, at your preference; Copyright Jack R. Uteg 2025.
 
 For convience, the terms of the GPL v3 are included in this package in ![COPYING](https://github.com/HobbitJack/caeser/blob/master/COPYING); they may also be found online at https://gnu.org/licenses/gpl.html.
